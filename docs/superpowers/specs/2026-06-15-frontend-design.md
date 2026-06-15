@@ -174,3 +174,10 @@ Organización por **features** para mantener cada módulo aislado y enfocado.
 - Un Vendedor puede: registrarse como vendedor, crear/editar/eliminar sus productos con atributos dinámicos por categoría, y verlos en el catálogo.
 - El RBAC se respeta (rutas y UI por rol) y la seguridad la impone el backend.
 - El frontend evidencia las características políglotas (consultas Mongo, BSON dinámico, UUID, factura ACID, cifrado).
+
+## 15. Implementación por fases (sugerida)
+
+El alcance es amplio pero cohesivo. Se recomienda ejecutar en dos fases verificables de forma independiente:
+
+- **Fase 1 — Backend (habilita el frontend):** endpoints de catálogo (`/api/productos*`), carrito (`/api/carrito*`) y checkout/facturas (`/api/checkout`, `/api/facturas*`); registro con `tipo`; seed de productos de ejemplo; script de humo. Se verifica con el script de humo.
+- **Fase 2 — Frontend:** andamiaje (Vite + Tailwind + shadcn/ui + router + `AuthContext` + cliente API) → auth/layout → catálogo (filtros + detalle) → carrito + checkout → métodos de pago + pedidos → panel de vendedor. Se verifica contra la API real.
