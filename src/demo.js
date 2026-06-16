@@ -97,6 +97,20 @@ async function main() {
     industria: ['moda'],
     variantes: [{ nombre: 'Talla', valor: 'XL', stock: 20 }],
   });
+  await productoRepository.crear({
+    sku: 'DEMO-SIL-001', nombre: 'Silla ergonómica', descripcion: 'Oficina', categoria: 'muebles',
+    precio: 180.0, stock: 15, tiendaId: vendedor.id,
+    atributos: { material: 'malla', color: 'negro' },
+    etiquetas: ['oferta'], marcas: ['Ergo'], industria: ['hogar'],
+    variantes: [{ nombre: 'Color', valor: 'Negro', stock: 15 }],
+  });
+  await productoRepository.crear({
+    sku: 'DEMO-AUR-001', nombre: 'Auriculares Bluetooth', descripcion: 'Inalámbricos', categoria: 'electronica',
+    precio: 60.0, stock: 40, tiendaId: vendedor.id,
+    atributos: { voltaje: '5V', bateria: '20h' },
+    etiquetas: ['gamer'], marcas: ['Sony'], industria: ['tecnologia'],
+    variantes: [{ nombre: 'Color', valor: 'Blanco', stock: 20 }],
+  });
   log('Productos creados (Mongo, atributos BSON dinámicos por categoría)', {
     laptop: { sku: laptop.sku, atributos: laptop.atributos },
     camiseta: { sku: camiseta.sku, atributos: camiseta.atributos },
