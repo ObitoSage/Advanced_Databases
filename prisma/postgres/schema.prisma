@@ -1,0 +1,101 @@
+// ============================================================================
+//  PASO 2 (A) — Esquema PostgreSQL: datos transaccionales + RBAC + facturación 3NF
+//  Cliente generado en: node_modules/@prisma/postgres-client
+//  Se importa como:      import { PrismaClient } from '@prisma/postgres-client'
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+  // Salida personalizada -> importable como '@prisma/postgres-client'
+  output   = "../../node_modules/@prisma/postgres-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_DATABASE_URL")
+}
+
+// ---- RBAC: el rol vive en su propia tabla (no se repite el nombre en cada usuario) ----
+model Rol {
+  id          Int       @id @default(autoincrement())
+  nombre      String    @unique // ADMIN | VENDEDOR | CLIENTE
+  descripcion String?
+  usuarios    Usuario[]
+
+  @@map("roles")
+}
+
+model Usuario {
+  id            String       @id @default(uuid()) @db.Uuid // <-- UUID que enlaza con MongoDB
+  email         String       @unique
+  passwordHash  String       @map("password_hash") // bcrypt (hash, NUNCA texto plano)
+  nombre        String
+  rolId         Int          @map("rol_id")
+  rol           Rol          @relation(fields: [rolId], references: [id])
+  facturas      Factura[]
+  metodosPago   MetodoPago[]
+  creadoEn      DateTime     @default(now()) @map("creado_en")
+  actualizadoEn DateTime     @updatedAt @map("actualizado_en")
+
+  @@index([rolId])
+  @@map("usuarios")
+}
+
+// ---- Facturación normalizada (3NF) ----
+// Factura NO contiene listas repetidas de productos: las líneas viven en
+// FacturaItem (elimina grupos repetidos y dependencias transitivas).
+model Factura {
+  id        String        @id @default(uuid()) @db.Uuid
+  numero    String        @unique
+  usuarioId String        @map("usuario_id") @db.Uuid
+  usuario   Usuario       @relation(fields: [usuarioId], references: [id])
+  subtotal  Decimal       @db.Decimal(12, 2)
+  impuestos Decimal       @db.Decimal(12, 2)
+  total     Decimal       @db.Decimal(12, 2)
+  estado    EstadoFactura @default(PENDIENTE)
+  items     FacturaItem[]
+  emitidaEn DateTime      @default(now()) @map("emitida_en")
+
+  @@index([usuarioId])
+  @@map("facturas")
+}
+
+model FacturaItem {
+  id          String  @id @default(uuid()) @db.Uuid
+  facturaId   String  @map("factura_id") @db.Uuid
+  factura     Factura @relation(fields: [facturaId], references: [id], onDelete: Cascade)
+  productoId  String  @map("producto_id") // referencia al _id (ObjectId) del Producto en Mongo
+  descripcion String
+  cantidad    Int
+  precioUnit  Decimal @db.Decimal(12, 2) @map("precio_unitario")
+  subtotal    Decimal @db.Decimal(12, 2)
+
+  @@index([facturaId])
+  @@map("factura_items")
+}
+
+// ---- Datos de tarjeta CIFRADOS (AES-256-GCM a nivel de aplicación) ----
+// Solo se guardan en claro los últimos 4 dígitos (para mostrar). El CVV NUNCA se almacena.
+model MetodoPago {
+  id         String   @id @default(uuid()) @db.Uuid
+  usuarioId  String   @map("usuario_id") @db.Uuid
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  titular    String
+  marca      String // VISA | MASTERCARD | AMEX...
+  ultimos4   String   @map("ultimos4")
+  expMes     Int      @map("exp_mes")
+  expAnio    Int      @map("exp_anio")
+  panCifrado String   @map("pan_cifrado") // número completo cifrado (Base64)
+  panIv      String   @map("pan_iv") // vector de inicialización (GCM)
+  panTag     String   @map("pan_tag") // tag de autenticación (GCM)
+  creadoEn   DateTime @default(now()) @map("creado_en")
+
+  @@index([usuarioId])
+  @@map("metodos_pago")
+}
+
+enum EstadoFactura {
+  PENDIENTE
+  PAGADA
+  ANULADA
+}

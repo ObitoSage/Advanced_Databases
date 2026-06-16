@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.log
+dist/
+build/
+.superpowers/
+# clientes Prisma generados (se regeneran con npm run prisma:generate)
+node_modules/@prisma/postgres-client/
+node_modules/@prisma/mongo-client/

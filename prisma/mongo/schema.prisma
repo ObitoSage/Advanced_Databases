@@ -1,0 +1,66 @@
+// ============================================================================
+//  PASO 2 (B) — Esquema MongoDB: catálogo con atributos dinámicos (BSON) + carrito
+//  Cliente generado en: node_modules/@prisma/mongo-client
+//  Se importa como:      import { PrismaClient } from '@prisma/mongo-client'
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+  // Salida personalizada -> importable como '@prisma/mongo-client'
+  output   = "../../node_modules/@prisma/mongo-client"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_DATABASE_URL")
+}
+
+model Producto {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  sku         String     @unique
+  nombre      String
+  descripcion String?
+  categoria   String // electronica | ropa | muebles | adornos | cocina
+  precio      Float
+  stock       Int        @default(0)
+  tiendaId    String     @map("tienda_id") // <-- UUID del Usuario/Vendedor de PostgreSQL
+
+  // Atributos dinámicos por categoría en BSON: { "voltaje": "220V" } o { "talla": "XL" }
+  atributos   Json
+
+  // Arreglos consultables ($in, hasSome, hasEvery...)
+  etiquetas   String[] // tags
+  marcas      String[]
+  industria   String[]
+  variantes   Variante[] // arreglo de objetos embebidos (BSON)
+
+  activo      Boolean    @default(true)
+  creadoEn    DateTime   @default(now()) @map("creado_en")
+
+  @@map("productos")
+}
+
+// Documento embebido (composite type) para variantes
+type Variante {
+  nombre String // ej. "Color" | "Talla"
+  valor  String // ej. "Rojo"  | "XL"
+  stock  Int    @default(0)
+  precio Float?
+}
+
+model Carrito {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  usuarioId     String        @unique @map("usuario_id") // <-- UUID del Usuario de PostgreSQL
+  items         CarritoItem[]
+  actualizadoEn DateTime      @updatedAt @map("actualizado_en")
+
+  @@map("carritos")
+}
+
+type CarritoItem {
+  productoId String @map("producto_id") @db.ObjectId
+  sku        String
+  nombre     String
+  cantidad   Int
+  precio     Float
+}
