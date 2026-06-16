@@ -20,6 +20,17 @@ export const productoRepository = {
     return mongo.producto.findMany({ where: { tiendaId } });
   },
 
+  // Búsqueda con filtros combinados (Prisma -> Mongo).
+  buscar({ q, categoria, precioMin, precioMax, etiquetas, marca, tiendaId, page = 1, limit = 12 }) {
+    const where = construirWhere({ q, categoria, precioMin, precioMax, etiquetas, marca, tiendaId });
+    const skip = (page - 1) * limit;
+    return mongo.producto.findMany({ where, skip, take: limit, orderBy: { creadoEn: 'desc' } });
+  },
+
+  contar({ q, categoria, precioMin, precioMax, etiquetas, marca, tiendaId }) {
+    return mongo.producto.count({ where: construirWhere({ q, categoria, precioMin, precioMax, etiquetas, marca, tiendaId }) });
+  },
+
   // ---- Búsqueda comparativa: $and + $gte/$lte ($gt/$lt) ----
   buscarPorRangoPrecio({ categoria, min, max }) {
     return mongo.producto.findMany({
@@ -77,3 +88,18 @@ export const productoRepository = {
     });
   },
 };
+
+function construirWhere({ q, categoria, precioMin, precioMax, etiquetas, marca, tiendaId }) {
+  const where = { activo: true };
+  if (categoria) where.categoria = categoria;
+  if (tiendaId) where.tiendaId = tiendaId;
+  if (q) where.nombre = { contains: q, mode: 'insensitive' };
+  if (precioMin != null || precioMax != null) {
+    where.precio = {};
+    if (precioMin != null) where.precio.gte = precioMin;
+    if (precioMax != null) where.precio.lte = precioMax;
+  }
+  if (etiquetas?.length) where.etiquetas = { hasSome: etiquetas };
+  if (marca) where.marcas = { has: marca };
+  return where;
+}
