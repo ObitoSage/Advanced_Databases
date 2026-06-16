@@ -26,14 +26,14 @@ export function ProductoFormPage() {
   const { crear, actualizar } = useGuardarProducto();
   const { data: existente } = useProducto(id ?? '');
 
-  const [base, setBase] = useState({ sku: '', nombre: '', descripcion: '', categoria: 'electronica', precio: 0, stock: 0 });
+  const [base, setBase] = useState({ sku: '', nombre: '', descripcion: '', categoria: 'electronica', precio: 0, stock: 0, imagen: '' });
   const [atributos, setAtributos] = useState<Record<string, string>>({});
   const [etiquetas, setEtiquetas] = useState('');
   const [marcas, setMarcas] = useState('');
 
   useEffect(() => {
     if (existente) {
-      setBase({ sku: existente.sku, nombre: existente.nombre, descripcion: existente.descripcion ?? '', categoria: existente.categoria, precio: existente.precio, stock: existente.stock });
+      setBase({ sku: existente.sku, nombre: existente.nombre, descripcion: existente.descripcion ?? '', categoria: existente.categoria, precio: existente.precio, stock: existente.stock, imagen: existente.imagenes?.[0] ?? '' });
       setAtributos(Object.fromEntries(Object.entries(existente.atributos ?? {}).map(([k, v]) => [k, String(v)])));
       setEtiquetas(existente.etiquetas.join(', '));
       setMarcas(existente.marcas.join(', '));
@@ -46,7 +46,8 @@ export function ProductoFormPage() {
     e.preventDefault();
     const lista = (s: string) => s.split(',').map((x) => x.trim()).filter(Boolean);
     const atributosLimpios = Object.fromEntries(claves.map((k) => [k, atributos[k] ?? '']).filter(([, v]) => v !== ''));
-    const datos = { ...base, precio: Number(base.precio), stock: Number(base.stock), atributos: atributosLimpios, etiquetas: lista(etiquetas), marcas: lista(marcas), industria: [], variantes: [] };
+    const { imagen, ...resto } = base;
+    const datos = { ...resto, precio: Number(base.precio), stock: Number(base.stock), atributos: atributosLimpios, etiquetas: lista(etiquetas), marcas: lista(marcas), industria: [], imagenes: imagen ? [imagen] : [], variantes: [] };
     try {
       if (editando && id) await actualizar.mutateAsync({ id, datos });
       else await crear.mutateAsync(datos);
@@ -64,6 +65,15 @@ export function ProductoFormPage() {
         <div className="space-y-2"><Label>SKU</Label><Input value={base.sku} onChange={(e) => setBase({ ...base, sku: e.target.value })} required disabled={editando} /></div>
         <div className="space-y-2"><Label>Nombre</Label><Input value={base.nombre} onChange={(e) => setBase({ ...base, nombre: e.target.value })} required /></div>
         <div className="space-y-2"><Label>Descripción</Label><Textarea value={base.descripcion} onChange={(e) => setBase({ ...base, descripcion: e.target.value })} /></div>
+        <div className="space-y-2">
+          <Label>Imagen (URL)</Label>
+          <div className="flex gap-3">
+            <Input value={base.imagen} onChange={(e) => setBase({ ...base, imagen: e.target.value })} placeholder="https://…" className="flex-1" />
+            <div className="size-16 shrink-0 overflow-hidden bg-[#f4f3f1]">
+              {base.imagen && <img src={base.imagen} alt="" className="size-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />}
+            </div>
+          </div>
+        </div>
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-2">
             <Label>Categoría</Label>

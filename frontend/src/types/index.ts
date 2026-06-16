@@ -6,7 +6,7 @@ export interface Producto {
   id: string; sku: string; nombre: string; descripcion?: string | null;
   categoria: string; precio: number; stock: number; tiendaId: string;
   atributos: Record<string, unknown>;
-  etiquetas: string[]; marcas: string[]; industria: string[]; variantes: Variante[];
+  etiquetas: string[]; marcas: string[]; industria: string[]; imagenes: string[]; variantes: Variante[];
   activo: boolean; creadoEn: string;
 }
 export interface Paginado<T> { data: T[]; total: number; page: number; limit: number; }
