@@ -26,4 +26,11 @@ export const productoController = {
       res.json(await productoService.detalle(req.params.id));
     } catch (e) { next(e); }
   },
+
+  async crear(req, res, next) {
+    try {
+      const producto = await productoService.crear({ ...req.body, tiendaId: req.usuario.sub });
+      res.status(201).json(producto);
+    } catch (e) { next(e); }
+  },
 };

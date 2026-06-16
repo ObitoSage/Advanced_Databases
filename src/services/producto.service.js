@@ -14,4 +14,24 @@ export const productoService = {
     if (!producto) throw Object.assign(new Error('Producto no encontrado'), { status: 404 });
     return producto;
   },
+
+  crear({ tiendaId, ...datos }) {
+    if (!datos.sku || !datos.nombre || !datos.categoria || datos.precio == null) {
+      throw Object.assign(new Error('sku, nombre, categoria y precio son obligatorios'), { status: 400 });
+    }
+    return productoRepository.crear({
+      sku: datos.sku,
+      nombre: datos.nombre,
+      descripcion: datos.descripcion ?? null,
+      categoria: datos.categoria,
+      precio: Number(datos.precio),
+      stock: Number(datos.stock ?? 0),
+      tiendaId,
+      atributos: datos.atributos ?? {},
+      etiquetas: datos.etiquetas ?? [],
+      marcas: datos.marcas ?? [],
+      industria: datos.industria ?? [],
+      variantes: datos.variantes ?? [],
+    });
+  },
 };
