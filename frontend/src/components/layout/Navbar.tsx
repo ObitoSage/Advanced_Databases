@@ -13,6 +13,9 @@ const departamentos = [
   { label: 'Hogar', to: '/?categoria=muebles' },
 ];
 
+const enlace = 'transition-colors duration-150 hover:text-black';
+const icono = 'text-neutral-800 transition-transform duration-150 hover:text-black active:scale-90';
+
 export function Navbar() {
   const { usuario, logout } = useAuth();
   const navigate = useNavigate();
@@ -33,74 +36,71 @@ export function Navbar() {
   const cuentaTo = !usuario ? '/login' : usuario.rol === 'VENDEDOR' ? '/vendedor' : '/pedidos';
 
   return (
-    <header className="sticky top-0 z-50 bg-white">
-      {/* Fila 1: departamentos · logotipo · cuenta */}
-      <div className="border-b border-neutral-200">
-        <div className="mx-auto grid h-16 max-w-screen-2xl grid-cols-2 items-center px-5 md:grid-cols-3 lg:px-8">
-          <nav className="hidden items-center gap-7 text-[13px] text-neutral-700 md:flex">
-            {departamentos.map((d) => (
-              <Link key={d.label} to={d.to} className="transition-colors hover:text-black">{d.label}</Link>
-            ))}
-          </nav>
-          <Link
-            to="/"
-            className="justify-self-start text-xl font-semibold tracking-[0.32em] text-black md:justify-self-center md:text-2xl"
-          >
-            NOVAMARKET
-          </Link>
-          <div className="flex items-center justify-end gap-5 text-neutral-800">
-            {usuario?.rol === 'CLIENTE' && (
-              <Link to="/pedidos" aria-label="Favoritos y pedidos" className="hidden hover:text-black sm:block">
-                <Heart className="size-5" strokeWidth={1.5} />
-              </Link>
-            )}
-            <Link to={cuentaTo} aria-label="Mi cuenta" className="hover:text-black">
-              <User className="size-5" strokeWidth={1.5} />
+    // Un solo header cohesivo: fila principal + fila de categorías, con un único borde inferior.
+    <header className="sticky top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur">
+      {/* Fila principal: departamentos · logotipo · cuenta */}
+      <div className="mx-auto grid h-14 max-w-screen-2xl grid-cols-2 items-center px-5 md:grid-cols-3 lg:px-8">
+        <nav className="hidden items-center gap-7 text-[13px] text-neutral-700 md:flex">
+          {departamentos.map((d) => (
+            <Link key={d.label} to={d.to} className={enlace}>{d.label}</Link>
+          ))}
+        </nav>
+        <Link
+          to="/"
+          className="justify-self-start text-xl font-semibold tracking-[0.32em] text-black transition-opacity duration-150 hover:opacity-80 md:justify-self-center md:text-2xl"
+        >
+          NOVAMARKET
+        </Link>
+        <div className="flex items-center justify-end gap-5">
+          {usuario?.rol === 'CLIENTE' && (
+            <Link to="/pedidos" aria-label="Favoritos y pedidos" className={`hidden sm:block ${icono}`}>
+              <Heart className="size-5" strokeWidth={1.5} />
             </Link>
-            {usuario?.rol === 'CLIENTE' && (
-              <Link to="/carrito" aria-label="Bolsa" className="relative hover:text-black">
-                <ShoppingBag className="size-5" strokeWidth={1.5} />
-                {numItems > 0 && (
-                  <span className="absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-black text-[10px] font-medium text-white">
-                    {numItems}
-                  </span>
-                )}
-              </Link>
-            )}
-            {usuario ? (
-              <button onClick={() => { logout(); navigate('/'); }} className="hidden text-[13px] text-neutral-600 hover:text-black sm:block">
-                Salir
-              </button>
-            ) : (
-              <Link to="/login" className="hidden text-[13px] text-neutral-600 hover:text-black sm:block">Entrar</Link>
-            )}
-          </div>
+          )}
+          <Link to={cuentaTo} aria-label="Mi cuenta" className={icono}>
+            <User className="size-5" strokeWidth={1.5} />
+          </Link>
+          {usuario?.rol === 'CLIENTE' && (
+            <Link to="/carrito" aria-label="Bolsa" className={`relative ${icono}`}>
+              <ShoppingBag className="size-5" strokeWidth={1.5} />
+              {numItems > 0 && (
+                <span className="absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-black text-[10px] font-medium text-white">
+                  {numItems}
+                </span>
+              )}
+            </Link>
+          )}
+          {usuario ? (
+            <button onClick={() => { logout(); navigate('/'); }} className={`hidden text-[13px] text-neutral-600 sm:block ${enlace}`}>
+              Salir
+            </button>
+          ) : (
+            <Link to="/login" className={`hidden text-[13px] text-neutral-600 sm:block ${enlace}`}>Entrar</Link>
+          )}
         </div>
       </div>
 
-      {/* Fila 2: categorías · búsqueda */}
-      <div className="border-b border-neutral-200">
-        <div className="mx-auto flex h-12 max-w-screen-2xl items-center gap-6 px-5 lg:px-8">
-          <nav className="flex flex-1 items-center gap-5 overflow-x-auto whitespace-nowrap text-[13px] text-neutral-700 [scrollbar-width:none]">
-            <Link to="/?etiquetas=novedad" className="hover:text-black">Novedades</Link>
-            <Link to="/?etiquetas=oferta" className="font-medium text-[#c0202e] hover:opacity-80">Rebajas</Link>
-            {CATEGORIAS.map((c) => (
-              <Link key={c} to={`/?categoria=${c}`} className="hover:text-black">{tituloCategoria(c)}</Link>
-            ))}
-            {usuario?.rol === 'VENDEDOR' && (
-              <Link to="/vendedor" className="ml-auto font-medium text-black">Panel vendedor</Link>
-            )}
-          </nav>
-          <form onSubmit={buscar} className="relative hidden w-72 shrink-0 md:block">
-            <Search className="pointer-events-none absolute left-0 top-1/2 size-4 -translate-y-1/2 text-neutral-400" strokeWidth={1.5} />
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Buscar piezas y marcas"
-              className="w-full border-b border-neutral-300 bg-transparent py-1.5 pl-6 text-sm outline-none transition-colors placeholder:text-neutral-400 focus:border-black"
-            />
-          </form>
-        </div>
+      {/* Fila secundaria: categorías · búsqueda (sin borde divisorio, parte del mismo header) */}
+      <div className="mx-auto flex h-11 max-w-screen-2xl items-center gap-6 px-5 lg:px-8">
+        <nav className="flex flex-1 items-center gap-5 overflow-x-auto whitespace-nowrap text-[13px] text-neutral-600 [scrollbar-width:none]">
+          <Link to="/?etiquetas=novedad" className={enlace}>Novedades</Link>
+          <Link to="/?etiquetas=oferta" className="font-medium text-[#c0202e] transition-opacity duration-150 hover:opacity-75">Rebajas</Link>
+          {CATEGORIAS.map((c) => (
+            <Link key={c} to={`/?categoria=${c}`} className={enlace}>{tituloCategoria(c)}</Link>
+          ))}
+          {usuario?.rol === 'VENDEDOR' && (
+            <Link to="/vendedor" className="ml-auto font-medium text-black">Panel vendedor</Link>
+          )}
+        </nav>
+        <form onSubmit={buscar} className="relative hidden w-72 shrink-0 md:block">
+          <Search className="pointer-events-none absolute left-0 top-1/2 size-4 -translate-y-1/2 text-neutral-400" strokeWidth={1.5} />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Buscar piezas y marcas"
+            className="w-full border-b border-neutral-300 bg-transparent py-1.5 pl-6 text-sm outline-none transition-colors duration-150 placeholder:text-neutral-400 focus:border-black"
+          />
+        </form>
       </div>
     </header>
   );
