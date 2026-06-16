@@ -31,6 +31,14 @@ export const productoRepository = {
     return mongo.producto.count({ where: construirWhere({ q, categoria, precioMin, precioMax, etiquetas, marca, tiendaId }) });
   },
 
+  actualizar(id, data) {
+    return mongo.producto.update({ where: { id }, data });
+  },
+
+  eliminar(id) {
+    return mongo.producto.delete({ where: { id } });
+  },
+
   // ---- Búsqueda comparativa: $and + $gte/$lte ($gt/$lt) ----
   buscarPorRangoPrecio({ categoria, min, max }) {
     return mongo.producto.findMany({

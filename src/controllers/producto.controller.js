@@ -33,4 +33,23 @@ export const productoController = {
       res.status(201).json(producto);
     } catch (e) { next(e); }
   },
+
+  async mios(req, res, next) {
+    try {
+      res.json(await productoService.listarDeTienda(req.usuario.sub));
+    } catch (e) { next(e); }
+  },
+
+  async actualizar(req, res, next) {
+    try {
+      res.json(await productoService.actualizar({ id: req.params.id, tiendaId: req.usuario.sub, cambios: req.body }));
+    } catch (e) { next(e); }
+  },
+
+  async eliminar(req, res, next) {
+    try {
+      await productoService.eliminar({ id: req.params.id, tiendaId: req.usuario.sub });
+      res.status(204).end();
+    } catch (e) { next(e); }
+  },
 };
