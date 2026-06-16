@@ -12,3 +12,11 @@ export function useProductos(filtros: FiltrosCatalogo) {
     },
   });
 }
+
+export function useProducto(id: string) {
+  return useQuery({
+    queryKey: ['producto', id],
+    queryFn: async () => (await api.get<Producto>(`/productos/${id}`)).data,
+    enabled: Boolean(id),
+  });
+}
