@@ -13,16 +13,19 @@ function error(status, mensaje) {
 }
 
 export const authService = {
-  // El registro PÚBLICO siempre crea rol CLIENTE (un usuario no puede auto-asignarse ADMIN).
-  async registrar({ email, password, nombre }) {
+  // El registro PÚBLICO solo permite CLIENTE o VENDEDOR (jamás ADMIN: un usuario
+  // no puede auto-asignarse privilegios de administración).
+  async registrar({ email, password, nombre, tipo }) {
     if (!email || !password || !nombre) {
       throw error(400, 'email, password y nombre son obligatorios');
     }
     if (await usuarioRepository.buscarPorEmail(email)) {
       throw error(409, 'El email ya está registrado');
     }
-    const rol = await rolRepository.buscarPorNombre('CLIENTE');
-    if (!rol) throw error(500, 'Rol CLIENTE inexistente (siembra los roles primero)');
+    // Whitelist: cualquier valor distinto de 'vendedor' cae a CLIENTE (incluido 'admin').
+    const nombreRol = tipo === 'vendedor' ? 'VENDEDOR' : 'CLIENTE';
+    const rol = await rolRepository.buscarPorNombre(nombreRol);
+    if (!rol) throw error(500, `Rol ${nombreRol} inexistente (siembra los roles primero)`);
 
     const passwordHash = await hashPassword(password); // <-- hash bcrypt
     const usuario = await usuarioRepository.crear({
@@ -31,7 +34,7 @@ export const authService = {
       nombre,
       rolId: rol.id,
     });
-    return { id: usuario.id, email: usuario.email, nombre: usuario.nombre, rol: 'CLIENTE' };
+    return { id: usuario.id, email: usuario.email, nombre: usuario.nombre, rol: nombreRol };
   },
 
   async login({ email, password }) {
