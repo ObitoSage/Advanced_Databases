@@ -8,4 +8,10 @@ export const productoService = {
     ]);
     return { data, total, page: filtros.page ?? 1, limit: filtros.limit ?? 12 };
   },
+
+  async detalle(id) {
+    const producto = await productoRepository.buscarPorId(id);
+    if (!producto) throw Object.assign(new Error('Producto no encontrado'), { status: 404 });
+    return producto;
+  },
 };

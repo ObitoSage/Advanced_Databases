@@ -20,4 +20,10 @@ export const productoController = {
       res.json(resultado);
     } catch (e) { next(e); }
   },
+
+  async detalle(req, res, next) {
+    try {
+      res.json(await productoService.detalle(req.params.id));
+    } catch (e) { next(e); }
+  },
 };
