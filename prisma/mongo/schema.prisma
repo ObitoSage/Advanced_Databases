@@ -32,6 +32,7 @@ model Producto {
   etiquetas   String[] // tags
   marcas      String[]
   industria   String[]
+  imagenes    String[] // URLs de fotos del producto (la primera es la principal)
   variantes   Variante[] // arreglo de objetos embebidos (BSON)
 
   activo      Boolean    @default(true)

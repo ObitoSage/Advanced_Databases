@@ -6,7 +6,7 @@ import { mensajeError } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
+import { AuthShell } from './AuthShell';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -29,24 +29,24 @@ export function LoginPage() {
   };
 
   return (
-    <div className="mx-auto max-w-sm">
-      <h1 className="mb-6 text-2xl font-semibold tracking-tight">Iniciar sesión</h1>
-      <Card className="p-6">
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Contraseña</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </div>
-          <Button type="submit" className="w-full" disabled={cargando}>{cargando ? 'Entrando…' : 'Entrar'}</Button>
-        </form>
-      </Card>
-      <p className="mt-4 text-center text-sm text-muted-foreground">
-        ¿No tienes cuenta? <Link to="/registro" className="underline">Regístrate</Link>
-      </p>
-    </div>
+    <AuthShell
+      titulo="Iniciar sesión"
+      subtitulo="Bienvenido de nuevo a NOVAmarket."
+      pie={<p className="text-center md:text-left">¿No tienes cuenta? <Link to="/registro" className="font-medium text-black underline-offset-4 hover:underline">Regístrate</Link></p>}
+    >
+      <form onSubmit={onSubmit} className="space-y-5">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" type="email" autoComplete="email" placeholder="tu@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-11" />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Contraseña</Label>
+          <Input id="password" type="password" autoComplete="current-password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-11" />
+        </div>
+        <Button type="submit" className="h-11 w-full text-sm transition-transform duration-150 active:scale-[0.99]" disabled={cargando}>
+          {cargando ? 'Entrando…' : 'Entrar'}
+        </Button>
+      </form>
+    </AuthShell>
   );
 }

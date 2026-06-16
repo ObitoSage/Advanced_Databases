@@ -22,5 +22,8 @@ export function construirParams(f: FiltrosCatalogo): Record<string, string | num
   return params;
 }
 
-export const CATEGORIAS = ['electronica', 'ropa', 'muebles', 'adornos', 'cocina'];
-export const ETIQUETAS = ['oferta', 'gamer', 'verano'];
+export const CATEGORIAS = ['ropa', 'zapatos', 'accesorios', 'electronica', 'muebles', 'cocina', 'adornos'];
+export const ETIQUETAS = ['oferta', 'novedad', 'gamer', 'verano'];
+
+/** Etiqueta legible para una categoría (capitaliza). */
+export const tituloCategoria = (c: string) => c.charAt(0).toUpperCase() + c.slice(1);
