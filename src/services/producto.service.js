@@ -31,6 +31,7 @@ export const productoService = {
       etiquetas: datos.etiquetas ?? [],
       marcas: datos.marcas ?? [],
       industria: datos.industria ?? [],
+      imagenes: datos.imagenes ?? [],
       variantes: datos.variantes ?? [],
     });
   },
@@ -47,7 +48,7 @@ export const productoService = {
     }
     // Solo se permiten campos editables (no se puede cambiar tiendaId ni sku).
     const permitido = {};
-    for (const k of ['nombre', 'descripcion', 'categoria', 'precio', 'stock', 'atributos', 'etiquetas', 'marcas', 'industria', 'variantes', 'activo']) {
+    for (const k of ['nombre', 'descripcion', 'categoria', 'precio', 'stock', 'atributos', 'etiquetas', 'marcas', 'industria', 'imagenes', 'variantes', 'activo']) {
       if (cambios[k] !== undefined) permitido[k] = k === 'precio' ? Number(cambios[k]) : k === 'stock' ? Number(cambios[k]) : cambios[k];
     }
     return productoRepository.actualizar(id, permitido);

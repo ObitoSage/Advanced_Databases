@@ -78,6 +78,7 @@ async function main() {
     etiquetas: ['gamer', 'oferta'],
     marcas: ['Asus'],
     industria: ['tecnologia'],
+    imagenes: ['https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=900&q=80'],
     variantes: [
       { nombre: 'Color', valor: 'Negro', stock: 5 },
       { nombre: 'Color', valor: 'Plata', stock: 3 },
@@ -95,22 +96,40 @@ async function main() {
     etiquetas: ['oferta', 'verano'],
     marcas: ['Nike'],
     industria: ['moda'],
+    imagenes: ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80'],
     variantes: [{ nombre: 'Talla', valor: 'XL', stock: 20 }],
   });
   await productoRepository.crear({
-    sku: 'DEMO-SIL-001', nombre: 'Silla ergonómica', descripcion: 'Oficina', categoria: 'muebles',
+    sku: 'DEMO-SIL-001', nombre: 'Silla ergonómica', descripcion: 'Silla de oficina con soporte lumbar', categoria: 'muebles',
     precio: 180.0, stock: 15, tiendaId: vendedor.id,
     atributos: { material: 'malla', color: 'negro' },
     etiquetas: ['oferta'], marcas: ['Ergo'], industria: ['hogar'],
+    imagenes: ['https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=900&q=80'],
     variantes: [{ nombre: 'Color', valor: 'Negro', stock: 15 }],
   });
   await productoRepository.crear({
-    sku: 'DEMO-AUR-001', nombre: 'Auriculares Bluetooth', descripcion: 'Inalámbricos', categoria: 'electronica',
+    sku: 'DEMO-AUR-001', nombre: 'Auriculares Bluetooth', descripcion: 'Auriculares inalámbricos con cancelación de ruido', categoria: 'electronica',
     precio: 60.0, stock: 40, tiendaId: vendedor.id,
     atributos: { voltaje: '5V', bateria: '20h' },
     etiquetas: ['gamer'], marcas: ['Sony'], industria: ['tecnologia'],
+    imagenes: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80'],
     variantes: [{ nombre: 'Color', valor: 'Blanco', stock: 20 }],
   });
+
+  // Catálogo ampliado para una vitrina editorial completa.
+  const masProductos = [
+    { sku: 'DEMO-SNK-001', nombre: 'Zapatillas Cloud runner', descripcion: 'Zapatillas ligeras con suela técnica', categoria: 'zapatos', precio: 122.0, stock: 25, atributos: { talla: '42', material: 'malla técnica', color: 'negro' }, etiquetas: ['oferta', 'novedad'], marcas: ['On'], industria: ['moda'], imagenes: ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80'] },
+    { sku: 'DEMO-SNK-002', nombre: 'Zapatillas 9060 retro', descripcion: 'Siluetas de los 2000 con amortiguación', categoria: 'zapatos', precio: 180.0, stock: 18, atributos: { talla: '43', material: 'gamuza', color: 'gris' }, etiquetas: ['novedad'], marcas: ['New Balance'], industria: ['moda'], imagenes: ['https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=900&q=80'] },
+    { sku: 'DEMO-VES-001', nombre: 'Vestido midi plisado', descripcion: 'Vestido de tejido fluido para diario', categoria: 'ropa', precio: 95.0, stock: 30, atributos: { talla: 'M', material: 'viscosa', color: 'marfil' }, etiquetas: ['novedad', 'verano'], marcas: ['Atelier'], industria: ['moda'], imagenes: ['https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=900&q=80'] },
+    { sku: 'DEMO-BOL-001', nombre: 'Bolso de piel estructurado', descripcion: 'Bolso tipo tote en piel granulada', categoria: 'accesorios', precio: 320.0, stock: 12, atributos: { material: 'piel', color: 'camel' }, etiquetas: ['novedad'], marcas: ['Maison'], industria: ['moda'], imagenes: ['https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=80'] },
+    { sku: 'DEMO-REL-001', nombre: 'Reloj automático acero', descripcion: 'Reloj de pulsera con movimiento automático', categoria: 'accesorios', precio: 410.0, stock: 8, atributos: { material: 'acero inoxidable', color: 'plata' }, etiquetas: [], marcas: ['Nordgreen'], industria: ['moda'], imagenes: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80'] },
+    { sku: 'DEMO-SOF-001', nombre: 'Sofá modular tres plazas', descripcion: 'Sofá tapizado de líneas suaves', categoria: 'muebles', precio: 890.0, stock: 5, atributos: { material: 'lino', color: 'arena', dimensiones: '220x95cm' }, etiquetas: ['oferta'], marcas: ['Form'], industria: ['hogar'], imagenes: ['https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=900&q=80'] },
+    { sku: 'DEMO-CAM-002', nombre: 'Cámara mirrorless 24MP', descripcion: 'Cámara compacta para creadores', categoria: 'electronica', precio: 740.0, stock: 10, atributos: { voltaje: '7.2V', resolucion: '24MP' }, etiquetas: ['novedad'], marcas: ['Fujon'], industria: ['tecnologia'], imagenes: ['https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80'] },
+    { sku: 'DEMO-GAF-001', nombre: 'Gafas de sol acetato', descripcion: 'Montura de acetato con lentes polarizadas', categoria: 'accesorios', precio: 130.0, stock: 22, atributos: { material: 'acetato', color: 'carey' }, etiquetas: ['verano', 'oferta'], marcas: ['Komono'], industria: ['moda'], imagenes: ['https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=900&q=80'] },
+  ];
+  for (const p of masProductos) {
+    await productoRepository.crear({ ...p, descripcion: p.descripcion, stock: p.stock, tiendaId: vendedor.id, variantes: [] });
+  }
   log('Productos creados (Mongo, atributos BSON dinámicos por categoría)', {
     laptop: { sku: laptop.sku, atributos: laptop.atributos },
     camiseta: { sku: camiseta.sku, atributos: camiseta.atributos },
